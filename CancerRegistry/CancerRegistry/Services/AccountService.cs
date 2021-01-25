@@ -5,8 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using CancerRegistry.Models.Accounts.Patient;
-using CancerRegistry.Models.Diagnoses;
+
+
+
 
 namespace CancerRegistry.Services
 {
@@ -20,6 +21,7 @@ namespace CancerRegistry.Services
             _userManager = userManager;
             _signInManager = signInManager;
         }
+    
 
         public async Task<bool> LoginUser(string username, string password)
         {
@@ -32,7 +34,8 @@ namespace CancerRegistry.Services
 
             var signInResult = await _signInManager.PasswordSignInAsync(user, password, false, true);
             return signInResult.Succeeded;
-        }
+        }      
+    
 
         public async Task LogoutUser()
          => await _signInManager.SignOutAsync();
@@ -41,8 +44,10 @@ namespace CancerRegistry.Services
             string firstName,
             string lastName,
             string egn,
+            string email,
             string phoneNumber,
-            string password)
+            string password
+            )
         {
             var user = new ApplicationUser()
             {

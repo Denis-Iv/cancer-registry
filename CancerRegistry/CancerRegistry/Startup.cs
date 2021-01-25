@@ -6,6 +6,7 @@ using CancerRegistry.Identity;
 using CancerRegistry.Identity.Data;
 using CancerRegistry.Models.Diagnoses;
 using CancerRegistry.Services;
+using CancerRegistry.Services.Email;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -50,6 +51,8 @@ namespace CancerRegistry
             services.AddTransient<DiagnoseService>();
             services.AddTransient<TreatmentService>();
             services.AddTransient<HealthCheckService>();
+            services.AddTransient<EmailService>();
+            services.AddTransient<EmailHelper>();
 
             services.AddControllersWithViews();
 

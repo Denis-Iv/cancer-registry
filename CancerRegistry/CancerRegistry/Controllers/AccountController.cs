@@ -10,6 +10,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using CancerRegistry.Models.Accounts;
+using CancerRegistry.Services.Email;
 
 namespace CancerRegistry.Controllers
 {
@@ -18,11 +19,15 @@ namespace CancerRegistry.Controllers
     {
         private readonly AccountService _accountService;
         private readonly PatientService _patientService;
+        private readonly EmailService _emailService;
+        private readonly EmailHelper _emailHelper;
 
-        public AccountController(AccountService accountService, PatientService patientService)
+        public AccountController(AccountService accountService, PatientService patientService, EmailService emailService, EmailHelper emailHelper)
         {
             _accountService = accountService;
             _patientService = patientService;
+            _emailService = emailService;
+            _emailHelper = emailHelper;
         }
 
         [HttpGet]
@@ -73,6 +78,21 @@ namespace CancerRegistry.Controllers
 
         [HttpPost]
         [AllowAnonymous]
+        public async Task<IActionResult> ForgotPasswordByEmail([Required] string email)
+        {
+            var confirmationLink = await _emailHelper.GeneratePasswordReset(email, Url, Request.Scheme);
+            var emailResult = await _emailService.SendEmailPasswordReset(email, confirmationLink);
+
+            if (!emailResult)
+            {
+                ModelState.AddModelError("", "We couldn't sent you a password reset email link. Please try again");
+                return View();
+            }
+            return RedirectToAction("PasswordReset");
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> RegisterPatient(PatientAccountWrapperModel model)
         {
             if (!ModelState.IsValid)
@@ -86,6 +106,7 @@ namespace CancerRegistry.Controllers
                 model.RegisterModel.FirstName,
                 model.RegisterModel.LastName,
                 model.RegisterModel.EGN,
+                model.RegisterModel.Email,
                 model.RegisterModel.PhoneNumber,
                 model.RegisterModel.Password);
 
@@ -95,8 +116,8 @@ namespace CancerRegistry.Controllers
                 await _patientService.AddPatient(user.Id, user.PhoneNumber);
                 
                 return RedirectToAction("Index", "Home");
-            }
-            
+            }           
+
             foreach (var err in result.Errors)
                 ModelState.AddModelError("", err);
             model.RegisterModel.TabSelected = "2";
@@ -263,6 +284,10 @@ namespace CancerRegistry.Controllers
             return View();
 
         }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ForgotPasswordConfirmation() => View();
 
         public IActionResult AccessDenied()
             => View();
