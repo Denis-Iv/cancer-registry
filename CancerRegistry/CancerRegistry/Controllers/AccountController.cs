@@ -75,20 +75,21 @@ namespace CancerRegistry.Controllers
             await _accountService.LogoutUser();
             return RedirectToAction("Index", "Home");
         }
+             
 
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> ForgotPasswordByEmail([Required] string email)
         {
             var confirmationLink = await _emailHelper.GeneratePasswordReset(email, Url, Request.Scheme);
-            var emailResult = await _emailService.SendEmailPasswordReset(email, confirmationLink);
+            var emailResult = await _emailService.SendEmailPasswordReset(email, confirmationLink, _accountService);
 
             if (!emailResult)
             {
                 ModelState.AddModelError("", "We couldn't sent you a password reset email link. Please try again");
                 return View();
             }
-            return RedirectToAction("PasswordReset");
+            return View();
         }
 
         [HttpPost]
@@ -112,8 +113,7 @@ namespace CancerRegistry.Controllers
 
             if (result.Succeeded)
             {
-                var user = await _accountService.GetUserByName(model.RegisterModel.EGN);
-                await _patientService.AddPatient(user.Id, user.PhoneNumber);
+               
                 
                 return RedirectToAction("Index", "Home");
             }           
@@ -241,6 +241,9 @@ namespace CancerRegistry.Controllers
         [AllowAnonymous]
         public IActionResult ForgotPassword() => View();
 
+    
+
+
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> ForgotPassword([Required] string username)
@@ -265,6 +268,7 @@ namespace CancerRegistry.Controllers
         public IActionResult PasswordReset(string token, string username)
             => View(new PasswordReset() { Token = token, Username = username });
 
+
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> PasswordReset(PasswordReset passwordReset)
@@ -279,6 +283,28 @@ namespace CancerRegistry.Controllers
 
             if (pswResetResult.Succeeded) return View("PasswordResetSuccess");
             
+            foreach (var err in pswResetResult.Errors)
+                ModelState.AddModelError("", err);
+            return View();
+
+        }
+
+
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> PasswordResetByEmail(PasswordResetByEmail passwordReset)
+        {
+            if (!ModelState.IsValid)
+                return View(passwordReset);
+
+            var pswResetResult = await _accountService.ResetPasswordByEmail(
+                passwordReset.Token,
+                passwordReset.Email,
+                passwordReset.Password);
+
+            if (pswResetResult.Succeeded) return View("PasswordResetSuccess");
+
             foreach (var err in pswResetResult.Errors)
                 ModelState.AddModelError("", err);
             return View();

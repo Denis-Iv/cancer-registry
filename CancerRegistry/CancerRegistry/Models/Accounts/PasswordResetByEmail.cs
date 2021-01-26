@@ -6,17 +6,14 @@ using System.Threading.Tasks;
 
 namespace CancerRegistry.Models.Accounts
 {
-    public class PasswordReset
+    public class PasswordResetByEmail
     {
         [Required(ErrorMessage = "Полето \"Парола\" е задължително."), DataType(DataType.Password)]
         public String Password { get; set; }
         
         [Required(ErrorMessage = "Нужно е да потвърдите паролата."), DataType(DataType.Password), Compare(nameof(Password), ErrorMessage = "Паролите не съвпадат.")]
-        public String ConfirmPassword { get; set; }
-        
-        public String Username { get; set; }       
-
+        public String ConfirmPassword { get; set; }    
         public String Token { get; set; }
-        
+        public String Email { get; set; }
     }
 }

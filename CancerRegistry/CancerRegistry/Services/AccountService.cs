@@ -56,6 +56,7 @@ namespace CancerRegistry.Services
                 FirstName = firstName,
                 LastName = lastName,
                 EGN = egn,
+                Email = email,
                 PhoneNumber = phoneNumber
             };
 
@@ -144,6 +145,14 @@ namespace CancerRegistry.Services
             return PasswordResetResult(pswResetResult);
         }
 
+        public async Task<OperationResult> ResetPasswordByEmail(string token, string email, string newPassword)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            var pswResetResult = await _userManager.ResetPasswordAsync(user, token, newPassword);
+
+            return PasswordResetResult(pswResetResult);
+        }
+
         public async Task<OperationResult> ChangePassword(string accountId, string currentPassword, string newPassword)
         {
             var user = await _userManager.FindByIdAsync(accountId);
@@ -222,7 +231,7 @@ namespace CancerRegistry.Services
             return operationResult;
         }
 
-        private OperationResult PasswordResetResult(IdentityResult pswResetResult)
+        public OperationResult PasswordResetResult(IdentityResult pswResetResult)
         {
             var result = new OperationResult();
 

@@ -19,10 +19,11 @@ namespace CancerRegistry.Services.Email
         {
             var user = await _userManager.FindByEmailAsync(userEmail);
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var confirmationLink = urlHelper.Action("ResetPassword", "Email", new { token = token, email = user.Email }, scheme);
+            //var confirmationLink = urlHelper.Action("ResetPasswordByEmail", "PasswordResetByEmail", new { token = token, email = user.Id }, scheme);
 
-            return confirmationLink;
+            return token;
         }
+
 
         
     }

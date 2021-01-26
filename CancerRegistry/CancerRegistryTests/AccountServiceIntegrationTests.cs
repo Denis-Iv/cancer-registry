@@ -38,18 +38,19 @@ namespace CancerRegistryTests
         }
 
         [Test]
-        [TestCase("Qnko", "Qnkov", "9505131234", "0965342312", "Password123!")]
-        [TestCase("Ivaylo", "Petrov", "9302236456", "0965235132", "Password456!")]
+        [TestCase("Qnko", "Qnkov", "9505131234","abv@avb.com", "0965342312", "Password123!")]
+        [TestCase("Ivaylo", "Petrov", "9302236456", "abv@avb.com", "0965235132", "Password456!")]
         public async Task RegisterPatient_WhenPatientSuccessfullyRegisters_NoErrors(
             string firstName,
             string lastName,
             string egn,
+            string email,
             string phoneNumber,
             string password)
         {
             var accountService = new AccountService(_services.UserManager, _services.SignInManager);
 
-            var result = await accountService.RegisterPatient(firstName, lastName, egn, phoneNumber, password);
+            var result = await accountService.RegisterPatient(firstName, lastName, egn, email, phoneNumber, password);
             var user = await _services.UserManager.FindByNameAsync(egn);
 
             Assert.IsNull(result.Errors);
@@ -58,17 +59,18 @@ namespace CancerRegistryTests
         }
 
         [Test]
-        [TestCase("Qnko", "Qnkov", "1234", "0965342312", "Password123!")]
-        [TestCase("Ivaylo", "Petrov", "5678", "0965235132", "Password456!")]
+        [TestCase("Qnko", "Qnkov", "1234", "abv@avb.com", "0965342312", "Password123!")]
+        [TestCase("Ivaylo", "Petrov", "5678", "abv@avb.com", "0965235132", "Password456!")]
         public async Task RegisterPatient_WhenPatientFailsToRegister_WithErrors(
             string firstName,
             string lastName,
             string egn,
+            string email,
             string phoneNumber,
             string password)
         {
             var accountService = new AccountService(_services.UserManager, _services.SignInManager);
-            var result = await accountService.RegisterPatient(firstName, lastName, egn, phoneNumber, password);
+            var result = await accountService.RegisterPatient(firstName, lastName, egn, email, phoneNumber, password);
 
             var users = _services.UserManager.Users.ToList();
 

@@ -20,6 +20,8 @@ namespace CancerRegistry.Identity.Data
         {
             var context = serviceProvider.GetRequiredService<AccountDbContext>();
             context.Database.EnsureCreated();
+            var diagContext = serviceProvider.GetRequiredService<DiagnoseContext>();
+            diagContext.Database.EnsureCreated();
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             IdentityResult roleResult;
 
