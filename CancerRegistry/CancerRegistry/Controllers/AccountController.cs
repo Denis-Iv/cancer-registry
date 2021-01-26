@@ -75,18 +75,31 @@ namespace CancerRegistry.Controllers
             await _accountService.LogoutUser();
             return RedirectToAction("Index", "Home");
         }
-             
+       
 
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> ForgotPasswordByEmail([Required] string email)
         {
+            if (!ModelState.IsValid)
+            {          
+                return View("ForgotPassword");
+            }
+                       
+
             var confirmationLink = await _emailHelper.GeneratePasswordReset(email, Url, Request.Scheme);
+
+            if (confirmationLink == null)
+            {
+                ModelState.AddModelError("", "Потребителят не може да бъде намерен.");
+                return View("ForgotPassword");
+            }
+
             var emailResult = await _emailService.SendEmailPasswordReset(email, confirmationLink, _accountService);
 
             if (!emailResult)
             {
-                ModelState.AddModelError("", "We couldn't sent you a password reset email link. Please try again");
+                ModelState.AddModelError("", "Не успяхме да ви изпратим имейл.");
                 return View();
             }
             return View();
