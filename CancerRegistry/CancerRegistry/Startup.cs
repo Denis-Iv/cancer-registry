@@ -39,10 +39,13 @@ namespace CancerRegistry
                 options.UseSqlServer(
                     Configuration.GetConnectionString("AccountDbConnection")));
 
-            services.AddIdentity<ApplicationUser, IdentityRole>()
+            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            {
+                options.User.RequireUniqueEmail = true; 
+            }) 
                 .AddEntityFrameworkStores<AccountDbContext>()
                 .AddErrorDescriber<BulgarianLanguageIdentityErrorDescriber>()
-                .AddDefaultTokenProviders();
+                .AddDefaultTokenProviders();                ;
 
             services.AddTransient<AccountService>();
             services.AddTransient<AdministratorService>();
@@ -53,6 +56,9 @@ namespace CancerRegistry
             services.AddTransient<HealthCheckService>();
             services.AddTransient<EmailService>();
             services.AddTransient<EmailHelper>();
+
+            UserOptions uo = new UserOptions();
+            uo.RequireUniqueEmail = true;
 
             services.AddControllersWithViews();
 
