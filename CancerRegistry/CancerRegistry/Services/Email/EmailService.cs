@@ -37,9 +37,8 @@ namespace CancerRegistry.Services.Email
             MailMessage mailMessage = new MailMessage();
             mailMessage.From = new MailAddress("teststproject1@gmail.com");
             mailMessage.To.Add(new MailAddress(userEmail));
-            mailMessage.Subject = "Reset your password";
-            mailMessage.IsBodyHtml = true;
-            
+            mailMessage.Subject = "Забравена парола";
+            mailMessage.IsBodyHtml = true;            
             
             var password = GeneratePassword(true, true, true, true, 16);
             mailMessage.Body = "<p>Нова парола: " + password + "</p>";
